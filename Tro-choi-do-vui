@@ -1,0 +1,67 @@
+
+import streamlit as st
+
+st.set_page_config(page_title="Game đố vui", page_icon="🎮")
+
+st.title("🎮 GAME ĐỐ VUI MINI")
+st.write("Trả lời đúng để ghi điểm nha!")
+
+questions = [
+    {
+        "q": "Thủ đô Việt Nam là gì?",
+        "options": ["Hà Nội", "Huế", "Đà Nẵng"],
+        "answer": "Hà Nội"
+    },
+    {
+        "q": "1 + 1 bằng bao nhiêu?",
+        "options": ["1", "2", "3"],
+        "answer": "2"
+    },
+    {
+        "q": "Mặt trời mọc ở hướng nào?",
+        "options": ["Tây", "Đông", "Bắc"],
+        "answer": "Đông"
+    }
+]
+
+if "score" not in st.session_state:
+    st.session_state.score = 0
+    st.session_state.index = 0
+    st.session_state.done = False
+
+if not st.session_state.done:
+    i = st.session_state.index
+    q = questions[i]
+
+    st.progress((i + 1) / len(questions))
+    st.subheader(f"Câu {i + 1}: {q['q']}")
+
+    answer = st.radio(
+        "Chọn đáp án:",
+        q["options"],
+        key=f"answer_{i}"
+    )
+
+    if st.button("Xác nhận đáp án"):
+        if answer == q["answer"]:
+            st.session_state.score += 1
+            st.success("Chính xác! 🎉")
+        else:
+            st.error("Sai rồi, cố lên nhé!")
+
+        st.session_state.index += 1
+
+        if st.session_state.index == len(questions):
+            st.session_state.done = True
+
+        st.rerun()
+
+else:
+    st.balloons()
+    st.header("🏆 Hoàn thành!")
+    st.write(f"Điểm của bạn: {st.session_state.score}/3")
+
+    if st.button("Chơi lại"):
+        for key in ["score", "index", "done"]:
+            del st.session_state[key]
+        st.rerun()
